@@ -40,6 +40,7 @@ jobs:
          run: jf npm publish
 
        - name: Build Docker Image
+         working-directory: ./
          env:
            IMAGE_NAME: joefrog.jfrog.io/nodejs-demo/nodejs-demo-image:${{ github.run_number }}
          run: |
