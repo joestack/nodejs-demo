@@ -43,7 +43,7 @@ jobs:
          env:
            IMAGE_NAME: joefrog.jfrog.io/nodejs-demo/nodejs-demo-image:${{ github.run_number }}
          run: |
-          jf docker build -t $IMAGE_NAME /build
+          jf docker build -t $IMAGE_NAME ./build
           jf docker push $IMAGE_NAME
          
        - name: Publish Build info With JFrog CLI
