@@ -24,6 +24,12 @@ jobs:
        - name: Install Deps
          working-directory: ./src
          run: jf npm install
+
+       - name: Start App
+         working-directory: ./src
+         run: |
+           npm start &
+           npx wait-on http://localhost:3000 -t 30000
            
        - name: Run tests
          working-directory: ./src
