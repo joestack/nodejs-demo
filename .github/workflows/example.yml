@@ -22,15 +22,19 @@ jobs:
          run: jf npm-config --global=true --repo-resolve=nodejs-demo-npm --repo-deploy=nodejs-demo-npm
            
        - name: Install Deps
+         working-directory: ./src
          run: jf npm install
            
        - name: Run tests
+         working-directory: ./src
          run: npm test
          
        - name: Publish
+         working-directory: ./src
          run: jf npm publish
          
        - name: Publish Build info With JFrog CLI
+         working-directory: ./src
          run: |
           # Collect environment variables for the build
           jf rt build-collect-env
