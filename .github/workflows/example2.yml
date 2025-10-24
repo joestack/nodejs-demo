@@ -47,7 +47,7 @@ jobs:
           pwd
           ls
           jf docker build -t $IMAGE_NAME .
-          jf docker push --build-name nodejs-demo-image --build-number ${{ github.run_number }}
+          jf docker push $IMAGE_NAME
          
        - name: Publish Build info With JFrog CLI
          working-directory: ./src
