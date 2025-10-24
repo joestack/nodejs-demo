@@ -42,7 +42,8 @@ jobs:
        - name: Build Docker Image
          working-directory: ./
          env:
-           IMAGE_NAME: joefrog.jfrog.io/nodejs-demo-docker/nodejs-demo-image:${{ github.run_number }}
+           #IMAGE_NAME: joefrog.jfrog.io/nodejs-demo-docker/nodejs-demo-image:${{ github.run_number }}
+           IMAGE_NAME: nodejs-demo-image:${{ github.run_number }}
          run: |
           pwd
           ls
