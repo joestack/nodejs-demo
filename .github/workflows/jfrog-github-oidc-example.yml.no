@@ -1,4 +1,4 @@
-name: "Setup JFrog CLI OIDC Example"
+name: "nodejs-demo"
 on: push
 
 permissions:
@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         env:
@@ -23,3 +24,82 @@ jobs:
         run: |
           # Ping the server
           jf rt ping
+
+       - name: Setup Node npm
+         uses: actions/setup-node@v3
+           
+       - name: Set CLI Config
+         run: jf npm-config --global=true --repo-resolve=nodejs-demo-npm --repo-deploy=nodejs-demo-npm
+           
+       - name: Install Deps
+         working-directory: ./src
+         run: jf npm install
+
+       - name: Start App
+         working-directory: ./src
+         run: |
+           npm start &
+           npx wait-on http://localhost:3000 -t 30000
+           
+       - name: Run tests
+         working-directory: ./src
+         run: npm test
+         
+       - name: Publish
+         working-directory: ./src
+         run: jf npm publish
+
+       - name: Build Docker Image
+         working-directory: ./
+         env:
+           IMAGE_NAME: joefrog.jfrog.io/nodejs-demo-docker/nodejs-demo-image:${{ github.run_number }}
+         run: |
+          #pwd
+          #ls
+          jf docker build -t $IMAGE_NAME .
+          jf docker scan $IMAGE_NAME --format=json > xray-results.json
+          jf docker push $IMAGE_NAME
+
+       - name: Build Docker Image
+         working-directory: ./
+         env:
+           IMAGE_NAME: joefrog.jfrog.io/nodejs-demo-docker/nodejs-demo-image:${{ github.run_number }}
+         run: |
+          jf docker build -t $IMAGE_NAME .
+
+       - name: Scan Docker Image
+         working-directory: ./
+         env:
+           IMAGE_NAME: joefrog.jfrog.io/nodejs-demo-docker/nodejs-demo-image:${{ github.run_number }}
+         run: |
+          jf docker scan $IMAGE_NAME --format=json > docker-results.json
+
+       - name: Upload Scan result 
+         uses: actions/upload-artifact@v4
+         with:
+           name: docker-results.json
+           path: docker-results.json
+         
+       - name: Publish Build info With JFrog CLI
+         working-directory: ./src
+         run: |
+          # Collect environment variables for the build
+          jf rt build-collect-env
+          # Collect VCS details from git and add them to the build
+          jf rt build-add-git
+          # Publish build info
+          jf rt build-publish
+
+       - name: Scan Build with Xray Watches
+         id: xray-scan
+         run: |
+           jf bs \
+              --fail=true \
+              --format=json > scan-results.json
+
+       - name: Upload Scan Results
+         if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: xray-scan-results
+           path: scan-results.json
