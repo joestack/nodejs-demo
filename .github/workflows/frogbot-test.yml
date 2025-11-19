@@ -47,7 +47,7 @@ jobs:
         working-directory: ./src
         run: |
           # Collect environment variables for the build
-          jf scan
+          jf scan .
 
 
       - name: Publish Build info With JFrog CLI
