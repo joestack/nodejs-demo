@@ -24,7 +24,18 @@ jobs:
         # The repository scanning will be triggered periodically on the following branches.
         branch: ["main"]
     steps:
-      - uses: jfrog/frogbot@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+        with:
+          oidc-provider-name: joestack/nodejs-demo@github
+          
+      - name: Frogbot    
+        uses: jfrog/frogbot@v2
         with:
           oidc-provider-name: "joestack/nodejs-demo@github"
         env:
