@@ -121,4 +121,4 @@ jobs:
           # Build Scan
           jf build scan
           # Publish build info
-          jf rt build-publish
+          jf rt build-publishs
