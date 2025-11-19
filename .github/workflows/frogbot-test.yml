@@ -33,7 +33,7 @@ jobs:
           JF_URL: ${{ vars.JF_URL }}
         with:
           oidc-provider-name: joestack/nodejs-demo@github
-          
+
       - name: Frogbot    
         uses: jfrog/frogbot@v2
         with:
@@ -42,3 +42,13 @@ jobs:
           JF_URL: ${{ vars.JF_URL }}
           JF_GIT_TOKEN: ${{ secrets.JF_GIT_TOKEN }}
           JF_GIT_BASE_BRANCH: ${{ matrix.branch }}    # For repository scan action
+
+      - name: Publish Build info With JFrog CLI
+        working-directory: ./src
+        run: |
+          # Collect environment variables for the build
+          jf rt build-collect-env
+          # Collect VCS details from git and add them to the build
+          jf rt build-add-git
+          # Publish build info
+          jf rt build-publish
